@@ -1,12 +1,12 @@
 import streamlit as st
 import requests
-import os
 import pandas as pd
+from datetime import datetime, timedelta
 
 # Load environment variables
 GROQ_API_KEY = "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"
 
-# Initialize session state for bills and subscriptions
+# Initialize session state for subscriptions
 if "subscriptions" not in st.session_state:
     st.session_state.subscriptions = []
 
@@ -15,6 +15,16 @@ st.set_page_config(page_title="Automated Bill & Subscription Management", layout
 
 # Page Title
 st.title("💳 Automated Bill & Subscription Management")
+
+# Function to calculate end date based on frequency
+def calculate_end_date(start_date, frequency):
+    if frequency == "Monthly":
+        return start_date + timedelta(days=30)
+    elif frequency == "Quarterly":
+        return start_date + timedelta(days=90)
+    elif frequency == "Yearly":
+        return start_date + timedelta(days=365)
+    return start_date
 
 # Function to call Groq API for processing requests
 def call_groq_api(prompt):
@@ -40,18 +50,22 @@ def call_groq_api(prompt):
     except Exception as e:
         return f"Error: {str(e)}"
 
-# Section to add a subscription
+# Sidebar for adding subscriptions
 st.sidebar.header("Add a Subscription")
 subscription_name = st.sidebar.text_input("Subscription Name")
 amount = st.sidebar.number_input("Amount", min_value=0.0, format="%.2f")
 frequency = st.sidebar.selectbox("Frequency", ["Monthly", "Quarterly", "Yearly"])
+start_date = st.sidebar.date_input("Start Date", datetime.today())
 
 if st.sidebar.button("Add Subscription"):
     if subscription_name and amount > 0:
+        end_date = calculate_end_date(start_date, frequency)
         st.session_state.subscriptions.append({
             "name": subscription_name,
             "amount": amount,
-            "frequency": frequency
+            "frequency": frequency,
+            "start_date": start_date.strftime('%Y-%m-%d'),
+            "end_date": end_date.strftime('%Y-%m-%d')
         })
         st.success(f"Subscription '{subscription_name}' added successfully!")
 
@@ -63,7 +77,7 @@ if st.session_state.subscriptions:
 else:
     st.warning("No subscriptions added yet.")
 
-# Manage existing subscriptions (Delete)
+# Manage existing subscriptions (Delete last)
 if st.button("Delete Last Subscription"):
     if st.session_state.subscriptions:
         deleted = st.session_state.subscriptions.pop()
@@ -71,10 +85,12 @@ if st.button("Delete Last Subscription"):
     else:
         st.warning("No subscriptions to delete.")
 
-# Call Groq API for advice or suggestions based on subscriptions
+# Call Groq API for financial advice
 if st.button("Get Financial Advice"):
     if st.session_state.subscriptions:
-        prompt = "Provide financial advice regarding the following subscriptions: " + ', '.join([sub['name'] for sub in st.session_state.subscriptions])
+        prompt = "Provide financial advice regarding the following subscriptions: " + ", ".join(
+            [sub['name'] for sub in st.session_state.subscriptions]
+        )
         advice = call_groq_api(prompt)
         st.subheader("Financial Advice")
         st.write(advice)
