@@ -11,7 +11,7 @@ if "subscriptions" not in st.session_state:
     st.session_state.subscriptions = []
 
 # Page Config
-st.set_page_config(page_title="Automated Bill & Subscription Management", layout="wide")
+st.set_page_config(page_title="Bill & Subscription Management", layout="wide")
 
 # Page Title
 st.title("💳  Bill & Subscription Management")
