@@ -14,7 +14,7 @@ if "subscriptions" not in st.session_state:
 st.set_page_config(page_title="Automated Bill & Subscription Management", layout="wide")
 
 # Page Title
-st.title("💳 Automated Bill & Subscription Management")
+st.title("💳  Bill & Subscription Management")
 
 # Function to calculate end date based on frequency
 def calculate_end_date(start_date, frequency):
