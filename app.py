@@ -4,7 +4,6 @@ import os
 import pandas as pd
 
 # Load environment variables
-load_dotenv()
 GROQ_API_KEY = "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"
 
 # Initialize session state for bills and subscriptions
