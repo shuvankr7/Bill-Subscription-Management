@@ -1,1 +1,1 @@
-app  link -https://automated-bill-subscription-management-46phxszvzbkuqfshmjnvaa.streamlit.app/
+app  link - https://bill-subscription-management-jxzmygododpmwwpfa65bhb.streamlit.app/
